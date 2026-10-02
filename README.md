@@ -5,6 +5,8 @@ machine was, hour by hour. It covers 37 users on 118 machines: 110 Zen4 CPU node
 GPU nodes, each with 4 NVIDIA H100 GPUs. Picking a user, from the row of names, a network
 chart or the Timearcs, highlights them across the charts and the heatmap.
 
+**▶ [Open the app](https://idatavisualizationlab.github.io/Interactive-Cluster-Wide-Usage-Visualization-Public/cluster_usage_user_node_time.html)**, then upload the data zip on its lock screen.
+
 ## What it contains
 
 **The chart box at the top**, one tab at a time:
@@ -26,14 +28,15 @@ expanded or collapsed.
 
 ## How to open it
 
-1. Open the page, in either of two ways:
-   - double-click **`cluster_usage_user_node_time.html`**, or
-   - double-click **`serve.bat`** (needs Python 3). It opens the page at
-     `http://localhost:8000/cluster_usage_user_node_time.html`; to stop it, close its window.
-     To use another port, run `serve.bat 8080`.
+1. Open the page:
+   - **online:** go to
+     https://idatavisualizationlab.github.io/Interactive-Cluster-Wide-Usage-Visualization-Public/cluster_usage_user_node_time.html
+   - **or from a copy of this repo:** double-click **`cluster_usage_user_node_time.html`**, or
+     double-click **`serve.bat`** (needs Python 3), which opens it at
+     `http://localhost:8000/cluster_usage_user_node_time.html`.
 2. The page opens on a lock screen. Upload the input data there: one **.zip** holding the two
    metric files (the h100 and the zen4 file). Click **Upload data (.zip)**, or drop the zip
-   onto the screen. For June 2026 it is `data/cluster_usage_input_2026-06.zip`.
+   onto the screen. The data is not in this repo; the zip is shared separately.
 
 The zip is opened and converted in your browser; nothing is uploaded to a server or saved.
 An internet connection is needed for the two libraries the page uses (Plotly and fflate).
