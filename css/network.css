@@ -1,0 +1,174 @@
+/* The right-hand panel: the network diagram, its tabs, slider and name chips. */
+
+/* ---- the network chart, between the Users picker and the Time arcs ---- */
+.netbox{border:1px solid var(--line);border-radius:8px;background:#101a26;margin-bottom:8px;
+  user-select:none;-webkit-user-select:none}
+.netbar{display:flex;align-items:center;gap:10px;padding:5px 9px 4px;border-bottom:1px solid var(--line)}
+.netlbl{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);flex:0 0 auto}
+.netbar .nettabs{flex:0 0 auto;border-bottom:0}
+.netstamp{flex:0 0 auto;display:flex;align-items:center;gap:6px}
+/* the hour, with its two step buttons, to the left of the slider: in the room the heatmap's
+   label gutter leaves, so the slider itself still starts over the first hour */
+.nethourctl .netstamp{position:absolute;left:6px;top:50%;transform:translateY(-50%);gap:4px}
+/* on two lines - the day over the hour - so it fits the narrower label gutter */
+.nethourctl .netstamp .nettxt{font-size:10.5px;display:flex;flex-direction:column;align-items:center;
+  line-height:1.2}
+.netstamp .nettxt{font-family:var(--mono);font-size:11px;color:var(--text-2);white-space:nowrap}
+.netgap{flex:1 1 auto}         /* the bar holds the tabs, the hour, and ALL - no tally */
+body.netdrag{cursor:ew-resize;user-select:none}
+.netall{background:var(--panel);border:1px solid var(--line);border-radius:4px;
+  color:var(--text-2);font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+  padding:3px 9px;cursor:pointer}
+.netall:hover{background:#1b293a;color:var(--text)}
+.netall.some{border-color:#3f6ea8;color:#cfe0f5}
+.netall.on{background:#24466e;border-color:#5b8fd0;color:#eaf1fb}
+/* the two sub tabs: one hour at a time, or every link of the month */
+.nettabs{display:flex;border-bottom:1px solid var(--line)}
+.netbar .nettab{flex:0 0 auto;padding:4px 10px 5px;white-space:nowrap}
+.nettab{flex:1 1 0;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;
+  color:var(--text-3);font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  padding:6px 4px 7px;cursor:pointer}
+.nettab:hover{color:var(--text)}
+.nettab.on{color:var(--text);border-bottom-color:#5b8fd0}
+/* The hour slider, at the foot of the by-hour tab. It is a block, not a flex row, so
+   js/network-panel.js can give it the width and the left offset that put its handle over
+   the hour it is showing on the dates at the foot of the window; the label is taken out
+   of the flow, into the room the label gutter leaves on the left. */
+.nethourctl{position:relative;flex:0 0 auto;padding:4px 0 7px;overflow:hidden;border-top:1px solid var(--line)}
+.nethourctl input[type=range]{display:block;margin:3px 0}
+.nethourlbl{display:none;position:absolute;left:10px;top:6px;font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--text-3);white-space:nowrap}
+.nettime{display:flex;align-items:center;gap:6px}
+.nettime input[type=range]{flex:1 1 auto;accent-color:#6aa6ff;cursor:pointer;margin:0;min-width:0}
+.netstep{background:none;border:1px solid var(--line);border-radius:3px;color:var(--text-3);
+  cursor:pointer;font-size:9px;line-height:1;padding:3px 6px}
+.netstep:hover{color:var(--text);background:#1b293a}
+.nettxt{font-family:var(--mono);font-size:11px;color:var(--text)}
+/* the map is taller than the window and scrolls in its own box, so the slider
+   above it and the list of names below it are always in view */
+/* the drawing's own box: the page scrolls past it, so it has a height of its own */
+.netscroll{overflow:hidden}
+.netscroll::-webkit-scrollbar{width:10px}
+.netscroll::-webkit-scrollbar-track{background:var(--ink-2)}
+.netscroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px}
+.netscroll::-webkit-scrollbar-thumb:hover{background:var(--text-3)}
+/* Time arcs: the dates stay put below the drawing, which scrolls above them */
+/* Time arcs: the Filter menu above the drawing */
+.arcfilter{position:relative;flex:0 0 auto;display:flex;align-items:flex-start;gap:6px;padding:2px 0 5px}
+.arcfilter .netstep{font-size:10px;padding:3px 8px;white-space:nowrap}
+.arcfilter .netstep.on{background:#24466e;border-color:#5b8fd0;color:#eaf1fb}
+.arcfilter .chips{display:flex;flex-wrap:wrap;gap:3px;max-height:40px;overflow-y:auto}
+.arcfilter .chip{font-family:var(--mono);font-size:9.5px;color:#eaf1fb;background:#24466e;
+  border:1px solid #5b8fd0;border-radius:3px;padding:1px 5px;cursor:pointer}
+.arcfilter .chip:hover{background:#2d5687}
+.arcmenu{position:absolute;top:26px;left:0;z-index:6;width:236px;max-height:300px;display:none;
+  flex-direction:column;gap:5px;background:var(--panel);border:1px solid var(--line-2);
+  border-radius:7px;box-shadow:0 10px 24px rgba(0,0,0,.55);padding:7px}
+.arcmenu.on{display:flex}
+.arcmenu input[type=search]{background:var(--ink-2);color:var(--text);border:1px solid var(--line-2);
+  border-radius:5px;padding:4px 7px;font-family:var(--mono);font-size:11px}
+.arcmenu .list{overflow-y:auto;min-height:0}
+.arcmenu label{display:flex;align-items:center;gap:6px;padding:2px 3px;cursor:pointer;
+  font-family:var(--mono);font-size:10.5px;color:var(--text-2);white-space:nowrap}
+.arcmenu label:hover{background:#1b293a;color:var(--text)}
+.arcmenu .n{margin-left:auto;color:var(--text-3);font-size:9.5px}
+/* Every tab's body is the same height (--tabh): the summary, the Time arcs (which scroll
+   inside it) and the three network charts. 820 px, up from the 660 the drawings had. */
+.netbox{--tabh:820px}
+.tabbody{height:var(--tabh)}
+.tabbody[hidden]{display:none}
+/* the by-hour tab: the drawing, and under it the hour slider; on the month tabs the
+   slider is hidden and the drawing takes the whole height */
+.netscroll{display:flex;flex-direction:column}
+.netwrap{position:relative;flex:1 1 auto;min-height:0}
+#netsvg{width:100%;height:100%;display:block;touch-action:none}
+/* a name is only drawn while its person or machine is hovered */
+#netsvg text.nlab{opacity:0;transition:opacity .08s}
+#netsvg text.nlab.on,#netsvg text.nlab.keep{opacity:1}
+#netsvg text{font-family:var(--mono);font-size:9.5px;paint-order:stroke;
+  stroke:rgba(6,11,17,.85);stroke-width:2.6px;stroke-linejoin:round}
+#netsvg .nn{cursor:pointer}
+#netsvg text.sm{font-size:8px;stroke-width:2.2px}
+.netempty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  text-align:center;color:var(--text-3);font-size:11px;font-family:var(--mono);pointer-events:none}
+.netempty.on{display:flex}
+/* Time arcs: zoom out, zoom in, show everything */
+/* in the panel's header, next to ALL, clear of the drawing */
+.arctools{display:flex;gap:3px;margin-left:auto}
+/* Network Chart by Month's two views, beside the tabs */
+.minitabs{display:flex;gap:3px;flex:0 0 auto;margin-left:6px}
+.minitabs .netstep{background:var(--panel);font-size:10px;padding:3px 8px;white-space:nowrap}
+.minitabs .netstep.on{background:#24466e;border-color:#5b8fd0;color:#eaf1fb}
+.arctools .netstep{background:var(--panel);font-size:10px;padding:3px 7px}
+.nettip{position:absolute;z-index:3;pointer-events:none;background:rgba(8,13,20,.94);
+  border:1px solid var(--line);border-radius:4px;padding:4px 7px;font-family:var(--mono);
+  font-size:10px;color:var(--text);white-space:nowrap;transform:translate(-50%,-160%);display:none}
+/* beside a group's circle (Bipartite Graph): level with its middle, not over it */
+.nettip.beside{transform:translate(0,-50%)}
+.netfoot{font-family:var(--mono);font-size:10px;color:var(--text-3)}
+.netchips{position:sticky;top:0;z-index:30;background:var(--panel);border-radius:7px;
+  display:flex;flex-wrap:wrap;gap:4px;max-height:64px;overflow-y:auto;padding:5px 2px 7px;
+  border-top:1px solid var(--line);padding-top:7px}
+/* the list itself lays no boxes of its own, so ALL and the people wrap as one row */
+.netchiplist{display:contents}
+.netchips .netall{flex:0 0 auto;padding:2px 9px}
+.netchip{font-family:var(--mono);font-size:9.5px;color:var(--text-3);background:var(--panel);
+  border:1px solid var(--line);border-radius:3px;padding:2px 6px;cursor:pointer;
+  display:flex;align-items:center;gap:5px}
+.netchip:hover{color:var(--text);background:#1b293a}
+.netchip.live{color:var(--text);border-color:#3d5a7d;background:#16243a}
+.netchip.on{color:var(--text);border-color:#5b8fd0;background:#24466e}
+.netchip .sw{width:8px;height:8px;border-radius:2px;flex:0 0 auto;
+  border:1px solid rgba(255,255,255,.25)}
+
+/* ---- Summarization, the first tab (js/summary.js): Stats and Rankings side by side on
+   top, Hours used per day across the bottom. Only the Rankings mini tabs can be clicked. */
+.sumscroll{padding:12px 10px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.sumtop{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sumpanel{min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--ink-2);
+  border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.sumpanel-h{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--text-2);margin-bottom:8px;min-height:22px}
+.sumpanel-h .minitabs{margin-left:auto}
+/* its size comes from the zone, never from the chart in it; it scrolls through every
+   entry, its scroll bar always there so its width never changes */
+.rankbody{flex:1 1 0;min-height:0;display:flex;align-items:stretch;gap:2px}
+.rankylab{flex:0 0 18px;display:flex;align-items:center;justify-content:center;
+  writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;color:#cfe0f5;white-space:nowrap}
+.rankchart{flex:1 1 0;min-width:0;min-height:0;overflow-x:hidden;overflow-y:scroll;position:relative}
+.rankchart::-webkit-scrollbar{width:10px}
+.rankchart::-webkit-scrollbar-track{background:var(--ink-2)}
+.rankchart::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px}
+.rankchart::-webkit-scrollbar-thumb:hover{background:var(--text-3)}
+/* The strip keeps almost the full width of the box - only this padding and its own border
+   in from each side - so its plot can still be given the heatmap's exact left and right
+   edges (alignStrip). The heatmap's plot ends 17 px inside the card, this 11 px; an inset
+   of 26 px once left the strip 11 px short on the right. */
+.sumscroll .strip{flex:0 0 auto;margin:0;padding:10px 0 4px;background:var(--ink-2);
+  border:1px solid var(--line);border-radius:8px}
+.sumscroll .strip-h{padding:0 12px}
+/* the strip's room is kept from the start (STRIP_H in strip.js), so the zones above have
+   their final size before anything is drawn */
+.sumscroll #strip{height:250px}
+/* Stats: a vertical list of rectangles sharing the zone's height - the name on the left,
+   the value on the right */
+.sumstats{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.sumtile{flex:1 1 0;min-height:38px;background:var(--panel);border:1px solid var(--line);border-radius:7px;
+  padding:4px 14px;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.sumtile .st-l{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2)}
+.sumtile .st-v{flex:0 0 auto;font-size:19px;font-weight:640;color:var(--text);letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;line-height:1.2;text-align:right}
+
+/* ---- Network Chart by Month, Original (2 rings): the key to the machines' colours ---- */
+.grplegend{position:absolute;top:12px;left:12px;z-index:2;border-collapse:collapse;
+  background:rgba(20,31,46,.92);border:1px solid var(--line-2);border-radius:7px;
+  font-family:var(--mono);font-size:10.5px;color:var(--text-2)}
+.grplegend[hidden]{display:none}
+.grplegend th{padding:6px 10px 4px;text-align:left;font-family:var(--sans);font-weight:600;
+  font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.grplegend td{padding:2px 10px}
+.grplegend tr:last-child td{padding-bottom:7px}
+.grplegend td.n{text-align:right;color:var(--text-3)}
+.grplegend tbody tr{cursor:default}
+.grplegend tbody tr:hover td{color:var(--text)}
+.grplegend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px}

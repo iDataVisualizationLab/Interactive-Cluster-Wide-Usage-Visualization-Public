@@ -1,0 +1,100 @@
+/* Page colours, type, header, cards, menus, buttons and sliders. */
+
+:root{
+  --ink:#0d1520; --ink-2:#141f2e; --panel:#182534; --line:#2a3a4d; --line-2:#35485f;
+  --text:#e7edf4; --text-2:#a6b4c4; --text-3:#728499;
+  --h100:#e6a532; --zen4:#39b7a8;
+  --mono:"SFMono-Regular",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+/* One scrollbar, the window's own: every chart is drawn at its full height and the page
+   scrolls past them. The dates and the colour band are stuck to the foot of the window
+   (.footbar in chart.css), so they stay in view wherever the page is. */
+body{margin:0;background:var(--ink);color:var(--text);font-family:var(--sans);font-size:14px;
+  line-height:1.55}
+.wrap{max-width:1720px;margin:0 auto;padding:0 26px}
+header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#111c29,var(--ink))}
+header .wrap{padding-top:9px;padding-bottom:9px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin:0 0 9px}
+h1{font-size:19px;margin:0;font-weight:640;letter-spacing:-.02em}
+.sub{color:var(--text-2);font-size:13.5px;margin:0;max-width:100ch}
+.meta{display:none;flex-wrap:wrap;gap:18px;margin-top:13px;font-family:var(--mono);font-size:12px;color:var(--text-3)}
+.meta.show{display:flex}          /* only when the data could not be read */
+.meta b{color:var(--text)}
+.meta .build{color:var(--text-3);opacity:.7}
+/* shown only when the browser is running an older copy of the page than the server has */
+.stale{background:#4a2a12;color:#f7ddc0;border-bottom:1px solid #7d4b1f;
+  padding:9px 16px;font-family:var(--mono);font-size:12.5px}
+.stale .btn{margin:0 2px;padding:4px 10px;font-size:11.5px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 16px;
+  margin:12px 0 0}          /* nothing below it: the footer ends flush with the page */
+.card h2{font-size:16px;margin:0 0 4px;font-weight:620;letter-spacing:-.01em}
+.card .cs{font-size:12.5px;color:var(--text-3);margin:0 0 15px;max-width:112ch}
+/* the controls share the width of the screen between them; the buttons keep their size */
+.ctl-row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:11px}
+.ctl{flex:1 1 170px;min-width:0}
+.ctl.fit{flex:0 0 auto}
+/* the row at the top holds the Users picker alone; the rest live in the bar at the foot */
+.ctl-row.top{margin-bottom:9px;align-items:center}
+.ctl-row.top .ctl.who{flex:0 0 auto;display:flex;align-items:center;gap:9px}
+.ctl-row.top label{margin:0}
+.ctl-row.foot{margin:6px 0 8px;gap:12px}
+.ctl-row.foot label{margin-bottom:3px}
+.ctl-row.foot select{padding:6px 10px}
+.ctl-row.foot .btn{padding:6px 12px}
+
+/* the Users picker: a button, the people picked beside it, and a list to tick them in */
+.who{position:relative}
+.whobtn{min-width:120px;text-align:left}
+.whobtn.on{background:#24466e;border-color:#5b8fd0;color:#eaf1fb}
+.whomenu{display:none;position:absolute;top:calc(100% + 7px);left:0;z-index:70;width:260px;
+  background:var(--ink-2);border:1px solid var(--line-2);border-radius:9px;padding:9px;
+  box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.whomenu.on{display:block}
+.whomenu input[type=search]{width:100%;background:var(--ink);color:var(--text);
+  border:1px solid var(--line-2);border-radius:6px;padding:6px 9px;font-family:var(--mono);font-size:12px}
+.whomenu .list{max-height:260px;overflow-y:auto;margin:7px 0}
+.whomenu .list label{display:flex;align-items:center;gap:7px;padding:3px 4px;border-radius:5px;
+  font-family:var(--mono);font-size:11.5px;color:var(--text-2);cursor:pointer}
+.whomenu .list label:hover{background:#1b293a;color:var(--text)}
+.whomenu .list .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.whomenu .whoall{width:100%;padding:5px;font-size:11.5px}
+.whochips{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-width:0}
+.whochips .chip{font-family:var(--mono);font-size:10.5px;color:var(--text);background:var(--ink-2);
+  border:1px solid var(--line-2);border-radius:20px;padding:2px 9px;cursor:pointer}
+.whochips .chip:hover{background:#24466e}
+.ctl label{display:block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px}
+select{background:var(--ink-2);color:var(--text);border:1px solid var(--line-2);border-radius:7px;
+  padding:8px 11px;font-family:var(--mono);font-size:12.5px;width:100%;min-width:0}
+.btn{background:var(--ink-2);color:var(--text-2);border:1px solid var(--line-2);border-radius:7px;
+  padding:8px 13px;font-family:var(--mono);font-size:12px;cursor:pointer}
+.btn:hover{color:var(--text);border-color:var(--text-3)}
+.ctl.slider{flex:2 1 260px;min-width:220px}
+.ctl.slider label b{color:var(--text);font-family:var(--mono);font-size:11px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;
+  background:var(--line-2);outline:none;margin:9px 0 4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+  background:var(--text);border:2px solid var(--panel);cursor:pointer;box-shadow:0 0 0 1px var(--line-2)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--text);
+  border:2px solid var(--panel);cursor:pointer}
+
+/* ---- the lock screen (js/lock.js): the page stays covered until the input .zip is given;
+   a file can be picked with the button or dropped anywhere on the screen ---- */
+body.locked{overflow:hidden}
+.lock{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:16px;background:var(--ink)}
+.lock-card{width:min(420px,100%);text-align:center}
+.lock-title{margin:0 0 20px;font-size:20px;font-weight:650;color:var(--text);letter-spacing:.01em}
+.lock-drop{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:34px 20px;border:1.5px dashed var(--line-2);border-radius:12px;background:var(--ink-2);
+  color:var(--text-2);font:inherit;cursor:pointer;transition:border-color .12s,background .12s}
+.lock-drop svg{width:34px;height:34px;color:#6aa6ff}
+.lock-drop:hover,.lock-drop:focus-visible,.lock.over .lock-drop{border-color:#5b8fd0;background:#16263a;
+  color:var(--text);outline:none}
+.lock-btn{font-size:14px;font-weight:600;color:var(--text)}
+.lock-msg{min-height:18px;margin-top:14px;font-family:var(--mono);font-size:12px;line-height:1.5;
+  color:var(--text-3)}
+.lock-msg.err{color:#f4712a}
+.lock.busy .lock-drop{opacity:.6;cursor:progress}

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REPACSS Cluster Usage Visualization</title>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js@2.35.2/dist/plotly.min.js"></script>
+<!-- opens the input .zip in the browser (lock.js) -->
+<script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
+<link rel="stylesheet" href="css/base.css?v=2026-10-01_21:53">
+<link rel="stylesheet" href="css/chart.css?v=2026-10-01_21:53">
+<link rel="stylesheet" href="css/network.css?v=2026-10-01_21:53">
+</head>
+<body class="locked">
+<!-- The lock screen (js/lock.js): the page stays covered until the input data - one .zip
+     with the h100 and zen4 metric files - is given here. Nothing is read from the data
+     folder. -->
+<div class="lock" id="lock" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <div class="lock-card">
+    <h1 class="lock-title" id="lockTitle">Cluster Usage Visualization</h1>
+    <button class="lock-drop" id="lockDrop" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 15V4"/><path d="M7.5 8.5 12 4l4.5 4.5"/><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/>
+      </svg>
+      <span class="lock-btn">Upload data (.zip)</span>
+    </button>
+    <input type="file" id="lockFile" accept=".zip,application/zip" hidden>
+    <div class="lock-msg" id="lockMsg" role="status" aria-live="polite"></div>
+  </div>
+</div>
+<header><div class="wrap">
+  <h1>Cluster Usage Visualization</h1>
+  <!-- #meta is empty and hidden: the counts moved into the heatmap controls box and
+       the Summarization tab. It stays here because main.js shows the message in it when
+       the data cannot be read, and then gives it the class "show". -->
+  <div class="meta" id="meta"></div>
+</div></header>
+
+<div class="wrap">
+  <div class="card">
+    <!-- The people to pick from. It rides at the top of the window (position:sticky), so
+         whichever chart is on screen the same row of names is there to click. -->
+    <div class="netchips" id="netchips">
+      <button class="netall" id="netall">ALL</button>
+      <div class="netchiplist" id="netchiplist"></div>
+    </div>
+
+    <!-- WHO WAS ON WHAT: a circle is a person, a square is a machine, and a line between
+         them means that person held that machine. Two tabs share one drawing: the hour the
+         slider sits on, or every link of the month. It used to be a panel on the right;
+         it is a chart on the page now. js/network-panel.js -->
+    <div class="netbox" id="netbox">
+      <div class="netbar">
+        <div class="nettabs" role="tablist">
+          <button class="nettab on" id="nettabSum" role="tab" aria-selected="true">Summarization</button>
+          <button class="nettab" id="nettabArcs" role="tab" aria-selected="false">Timearcs</button>
+          <button class="nettab" id="nettabHour" role="tab" aria-selected="false">Network Chart by Hour</button>
+          <button class="nettab" id="nettabBipL" role="tab" aria-selected="false"
+                  title="Rows of machine groups between rows of people, each person between the groups they used">Network Chart by Month (Users &amp; Groups)</button>
+          <button class="nettab" id="nettabMonthR" role="tab" aria-selected="false">Network Chart by Month (original)</button>
+          <button class="nettab" id="nettabMonth" role="tab" aria-selected="false">Network Chart by Month</button>
+          <button class="nettab" id="nettabBip" role="tab" aria-selected="false"
+                  title="The seven machine groups in the middle, people above and below, each row ordered so that similar ones stand together">Users &amp; Groups</button>
+        </div>
+        <!-- Network Chart by Month has three views: Original (people round a ring of machines),
+             Reallocation (the same two rings, people in the Users & Groups order and each
+             group's machines together) and 3 rings (people, groups, machines). Shown only on
+             that tab. -->
+        <span class="minitabs" id="monthTabs" role="tablist" aria-label="Network Chart by Month views">
+          <button class="netstep on" id="monthViewOld" type="button" role="tab" aria-selected="true"
+                  title="People round a ring of machines, each machine in its group's colour">Original</button>
+          <button class="netstep" id="monthViewTest" type="button" role="tab" aria-selected="false"
+                  title="Two rings: people in the Users &amp; Groups order, each group's machines together">Reallocation</button>
+          <button class="netstep" id="monthViewNow" type="button" role="tab" aria-selected="false"
+                  title="People, the seven machine groups and the machines, on three rings">3 rings</button>
+        </span>
+        <span class="netgap"></span>
+        <span class="arctools" id="arcTools"></span>
+      </div>
+      <!-- Summarization, the first tab: the month in numbers and the hours used per day.
+           Nothing here can be clicked - hovering a bar shows its day, and that is all;
+           it never changes the heatmap. js/summary.js -->
+      <div class="sumscroll tabbody" id="sumscroll">
+        <!-- Three zones: Stats (top left), Rankings with its three mini tabs (top right),
+             and Hours used per day across the bottom. js/summary.js -->
+        <div class="sumtop">
+          <section class="sumpanel" aria-label="Stats">
+            <div class="sumpanel-h">Stats</div>
+            <div class="sumstats" id="sumstats"></div>
+          </section>
+          <section class="sumpanel" aria-label="Rankings">
+            <div class="sumpanel-h">Rankings
+              <span class="minitabs" id="rankTabs" role="tablist" aria-label="Rankings">
+                <button class="netstep on" type="button" role="tab" aria-selected="true" data-rank="cpu"
+                        title="Every CPU device by hours in use">CPU device Usage Ranking</button>
+                <button class="netstep" type="button" role="tab" aria-selected="false" data-rank="gpu"
+                        title="Every GPU device by hours in use">GPU device Usage Ranking</button>
+                <button class="netstep" type="button" role="tab" aria-selected="false" data-rank="users"
+                        title="The people who held the most machine-hours this month">Users Ranking</button>
+                <button class="netstep" type="button" role="tab" aria-selected="false" data-rank="days"
+                        title="The days with the most machine-hours held">Busy Days Ranking</button>
+              </span>
+            </div>
+            <!-- the list's axis name, turned on its side, stands in the middle of the part in
+                 view; the chart scrolls beside it -->
+            <div class="rankbody">
+              <div class="rankylab" id="rankYLab"></div>
+              <div class="rankchart" id="rankchart"><div id="rankplot"></div></div>
+            </div>
+          </section>
+        </div>
+        <!-- the "Hours used per day" strip that was commented out on 2026-09-22, back as it
+             was, except that a bar can no longer be clicked: hovering it shows the day and
+             that is all. Its dates and bars stand on the same hours as the dates at the
+             foot of the window. js/strip.js -->
+        <div class="strip">
+          <div class="strip-h"><span id="stripLbl">Hours used per day</span> &mdash;
+            <b id="stripSel">whole month</b></div>
+          <div id="strip"></div>
+        </div>
+      </div>
+      <div class="netscroll tabbody" id="netscroll" hidden>
+        <div class="netwrap" id="netwrap">
+          <svg id="netsvg"></svg>
+          <div class="netempty" id="netempty">nobody was on the cluster this hour</div>
+          <div class="nettip" id="nettip"></div>
+          <!-- the Original (2 rings) view's key: each machine group and its colour -->
+          <table class="grplegend" id="grpLegend" hidden></table>
+        </div>
+        <!-- the hour the drawing is for, on the tab it belongs to. Its handle stands over
+             the same hour as the dates at the foot of the window (alignHourRow). -->
+        <div class="nethourctl" id="nethourctl">
+          <div class="netstamp" id="netstamp">
+          <button class="netstep" id="netprev" title="Hour before">&#9664;</button>
+          <span class="nettxt" id="nettxt"></span>
+          <button class="netstep" id="netnext" title="Hour after">&#9654;</button>
+          </div>
+          <input type="range" id="nettime" min="0" max="719" step="1" value="0">
+        </div>
+      </div>
+      <!-- Time arcs, the second tab: every machine and person down the side, the month
+           across, sharing the heatmap's hours so an arc stands above the same day as the
+           cells below it. As tall as the other tabs; it scrolls inside. js/arcs.js -->
+      <div class="arcscroll tabbody" id="arcscroll" hidden>
+        <div class="arcwrap" id="arcwrap">
+          <svg id="arcsvg"></svg>
+          <div class="nettip" id="arctip"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Between the tabs and the heatmap, flush left with them: the heatmap's title, the
+         people highlighted (room kept for all of them, so the heatmap never moves), and
+         Union, Intersection and Exclusive. js/highlight.js -->
+    <div class="hlmenu" id="hlmenu"></div>
+
+    <div class="scroll" id="scroll">
+      <!-- The heatmap's own controls, in a small box at its top right: the button that
+           opens and folds it, and under it the controls. It rides down the chart
+           (position:sticky) just under the row of people, and never leaves the heatmap.
+           js/controls.js -->
+      <div class="minipin" id="minipin">
+        <div class="minimenu" id="minimenu">
+          <button class="mm-toggle" id="mmToggle" type="button" aria-expanded="true"
+                  aria-controls="mmBody" title="Hide the heatmap controls">Controls <span class="mm-car">&#9662;</span></button>
+          <div class="mm-body" id="mmBody">
+            <div class="legend">
+              <div class="lt"><b>Heatmap Usage</b>
+                <span class="rng"><b id="rngTxt">0&ndash;100%</b>
+                  <a id="rngReset" title="Show the whole range">reset</a></span></div>
+              <div class="barwrap" id="barwrap">
+                <div class="bar" id="bar"></div>
+                <div class="veil" id="veilLo"></div>
+                <div class="veil" id="veilHi"></div>
+                <div class="grip" id="gripLo"></div>
+                <div class="grip" id="gripHi"></div>
+              </div>
+              <div class="ticks" id="ticks"></div>
+            </div>
+            <div class="mm-two">
+              <div class="ctl"><label>Group rows by</label>
+                <select id="group">
+                  <option value="node">Node, then user</option>
+                  <option value="user">User, then node</option>
+                </select></div>
+              <div class="ctl"><label>Order rows by</label>
+                <select id="order">
+                  <option value="default">Name order</option>
+                  <option value="most">Most active first</option>
+                  <option value="least">Least active first</option>
+                </select></div>
+            </div>
+            <div class="ctl slider"><label>Rows with at least <b id="minhTxt">0 h</b> this month</label>
+              <input type="range" id="minh" min="0" max="100" value="0" step="1"></div>
+            <div class="mm-foot">
+              <button class="btn" id="exp" aria-pressed="false">Expand all</button>
+              <span class="mm-stat" id="stat"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="inner" id="inner">
+        <div class="ytitle"><span id="ytxt">User &middot; node pair</span></div>
+        <div class="gutter" id="gutter"></div>
+        <div class="plotcol"><div id="heat" class="plot"></div></div>
+      </div>
+    </div>
+    <!-- At the foot of the window (position:sticky): the dates, and nothing else. They are
+         not the heatmap's own axis: js/timeaxis.js draws them here and keeps them lined up
+         with the columns. -->
+    <div class="footbar" id="footbar">
+    <div class="taxis"><div id="timeaxis"></div></div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- one file per part of the page; lock.js takes the input .zip on the lock screen,
+     convert.js turns the two raw metric files in it into the rows the charts use (in
+     memory only), data.js hands them over, main.js starts it -->
+<script src="js/version.js?v=2026-10-01_21:53"></script>
+<script src="js/convert.js?v=2026-10-01_21:53"></script>
+<script src="js/lock.js?v=2026-10-01_21:53"></script>
+<script src="js/data.js?v=2026-10-01_21:53"></script>
+<script src="js/config.js?v=2026-10-01_21:53"></script>
+<script src="js/selection.js?v=2026-10-01_21:53"></script>
+<script src="js/rows.js?v=2026-10-01_21:53"></script>
+<script src="js/heatmap.js?v=2026-10-01_21:53"></script>
+<script src="js/legend.js?v=2026-10-01_21:53"></script>
+<script src="js/strip.js?v=2026-10-01_21:53"></script>
+<script src="js/highlight.js?v=2026-10-01_21:53"></script>
+<script src="js/summary.js?v=2026-10-01_21:53"></script>
+<script src="js/timeaxis.js?v=2026-10-01_21:53"></script>
+<script src="js/arcs.js?v=2026-10-01_21:53"></script>
+<script src="js/network-layout.js?v=2026-10-01_21:53"></script>
+<script src="js/network-panel.js?v=2026-10-01_21:53"></script>
+<script src="js/controls.js?v=2026-10-01_21:53"></script>
+<script src="js/main.js?v=2026-10-01_21:53"></script>
+</body>
+</html>
